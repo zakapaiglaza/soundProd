@@ -1,30 +1,29 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
-interface Album extends Document {
+export interface Album {
     title: string;
     artist: string;
     sound: Sound[];
-    likeForUser: mongoose.Types.ObjectId[];
+    likeForUser: ObjectId[];
 }
 
-interface Sound {
+
+export interface Sound {
+    _id?: ObjectId;
     title: string;
     url: string;
 }
 
 
-// const SoundSchema: Schema = new Schema({
-//     title: { type: String, required: true },
-//     url: { type: String, required: true }
-// })
+export interface AlbumP {
+    title: string;
+    artist: string;
+    image: string;
+    url: string;
+}
 
-const AlbumSchema: Schema = new Schema({
-    title: { type: String, required: true },
-    artist: { type: String, required: true },
-    // sound: { SoundSchema },
-    sound: [{ type: Schema.Types.ObjectId, ref: 'Sound' }],
-    likeForUser: [{ type: Schema.Types.ObjectId, ref: 'User' }]
-})
 
-const AlbumModule = mongoose.model<Album>('Album', AlbumSchema);
-export default AlbumModule;
+export interface SoundP {
+    title: string;
+    url: string;
+}

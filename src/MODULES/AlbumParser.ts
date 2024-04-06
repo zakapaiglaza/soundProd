@@ -1,27 +1,17 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
+import { AlbumP, SoundP } from '../REST_FOR_DB/AlbumModules/Album_interface/album_interface';
 
-interface Album {
-    title: string;
-    artist: string;
-    image: string;
-    url: string;
-}
-
-interface Sound {
-    title: string;
-    url: string;
-}
 
 export class AlbumParser {
-    static async getAlbums(userUrl: string): Promise<Album[]> {
+    static async getAlbums(userUrl: string): Promise<AlbumP[]> {
         return await axios.get(userUrl)
             .then(res => {
                 const html = res.data;
                 const $ = cheerio.load(html);
 
                 const albumsBox = $('#collection-items > ol');
-                const albums: Album[] = [];
+                const albums: AlbumP[] = [];
 
                 albumsBox.find('li.collection-item-container').each((index, element) => {
                     const albumElement = $(element);
@@ -46,14 +36,14 @@ export class AlbumParser {
             });
     }
 
-    static async getAlbumSound(albumUrl: string): Promise<Sound[]> {
+    static async getAlbumSound(albumUrl: string): Promise<SoundP[]> {
         return await axios.get(albumUrl)
             .then(response => {
                 const html = response.data;
                 const $ = cheerio.load(html);
 
                 const songsBox = $('#track_table');
-                const sound: Sound[] = [];
+                const sound: SoundP[] = [];
 
                 songsBox.find('.track_row_view').each((index, element) => {
                     const songElement = $(element);

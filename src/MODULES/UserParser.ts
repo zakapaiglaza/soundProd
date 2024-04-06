@@ -12,13 +12,13 @@ export class UserParser {
                 const supporters: string[] = [];
 
                 supBox.find('a').each((index, element) => {
-                    if (index < 10) {
+                    if (index < 1) {
                         const support = $(element).attr('href');
                         if (support !== undefined) {
                             const firstSplit: string[] = support.split("/");
                             const finalName: string = firstSplit.pop()!.split("?")[0];
                             supporters.push(support);
-                            console.log('поддержавшие альбом :>> ', finalName);
+
                         }
                     } else {
                         return false;

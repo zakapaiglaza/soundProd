@@ -1,13 +1,14 @@
-import { UserParser } from "../MODULES/UserParser";
+
 import { Worker } from 'worker_threads';
+import { getDB } from '../REST_FOR_DB/ConnectDB/db';
+import { UserParser } from "../MODULES/UserParser";
+
 
 export default class Start {
-    static async configForStart(albumUrl: string, outputFile: string) {
-
+    static async configForStart(albumUrl: string): Promise<void> {
         try {
+            const db = getDB();
             const users = await UserParser.getUsersSupAlbum(albumUrl);
-            // console.log(`поддержавшие альбом ${users}`);
-
             const promises: Promise<void>[] = [];
 
             for (const user of users) {
@@ -16,21 +17,22 @@ export default class Start {
                         path: './runWorker.ts'
                     }
                 });
-                const data = new Promise<void>((resolve, reject) => {
+
+                const dataPromise = new Promise<void>((resolve, reject) => {
                     worker.on('error', reject);
                     worker.on('exit', resolve);
-                })
+                    worker.on('message', async (message) => { });
+                });
 
-                worker.postMessage({ user, albumUrl, outputFile });
-                promises.push(data);
+                worker.postMessage({ user, albumUrl });
+
+                promises.push(dataPromise);
             }
 
             await Promise.all(promises);
-        } catch (e) {
-            console.error('ошибка парсинга ', e);
-            throw e;
+        } catch (error) {
+            console.error('Error:', error);
+            throw error;
         }
     }
-
 }
-

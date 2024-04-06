@@ -1,22 +1,78 @@
 import { parentPort } from 'worker_threads';
 import { AlbumParser } from '../MODULES/AlbumParser';
-import { write } from '../FS/fs';
+import { connectToMongo, getDB } from '../REST_FOR_DB/ConnectDB/db';
+import { Album, Sound, AlbumP, SoundP } from '../REST_FOR_DB/AlbumModules/Album_interface/album_interface';
 
 
-parentPort?.on('message', async (message) => {
-    const { user, outputFile } = message;
+connectToMongo()
+    .then(() => {
 
+        parentPort?.on('message', async (message) => {
+            const { user } = message;
+
+            try {
+                const albumsP: AlbumP[] = await AlbumParser.getAlbums(user);
+
+                if (albumsP.length === 0) {
+                    console.error('ошибка при получении альбомов юзера ');
+                    return;
+                }
+
+                for (const albumP of albumsP) {
+                    const soundP: SoundP[] = await AlbumParser.getAlbumSound(albumP.url);
+
+                    const album: Album = {
+                        title: albumP.title,
+                        artist: albumP.artist,
+                        sound: soundP.map((soundItemP) => {
+                            return {
+                                title: soundItemP.title,
+                                url: soundItemP.url,
+                            };
+                        }),
+                        likeForUser: []
+                    };
+
+                    await albumSave(album, album.sound);
+                }
+
+                parentPort?.postMessage({ success: true });
+            } catch (error) {
+                console.error('хз че за ошибка:', error);
+            }
+        });
+    })
+    .catch(error => {
+        console.error('ошибка подключения к MongoDB:', error);
+    });
+
+async function albumSave(album: Album, sound: Sound[]): Promise<Album | undefined> {
     try {
-        const albums = await AlbumParser.getAlbums(user);
-        // console.log(`альбомы юзера ${user}`, albums);
+        const db = getDB();
 
-        for (const album of albums) {
-            const sound = await AlbumParser.getAlbumSound(album.url);
-            // console.log(`треки в альбоме ${album.title}`, sound);
+        const albumCollection = db.collection('albums');
+        const soundCollection = db.collection('sounds');
 
-            await write({ user, album, sound }, outputFile);
+        const res = await albumCollection.insertOne(album);
+
+        if (!res || !res.insertedId) {
+            console.error('ошибка сохранения альбома');
+            return undefined;
+        }
+
+        const soundID = [];
+        for (const soundItem of sound) {
+            const soundRes = await soundCollection.insertOne(soundItem);
+            if (soundRes && soundRes.insertedId) {
+                soundID.push(soundRes.insertedId);
+            } else {
+                console.error('ошибка при сохранении трека');
+            }
         }
     } catch (e) {
-        console.error('ошибка парсинга', e);
+        console.error('ошибка записи в монго', e);
+        return undefined;
     }
-})
+}
+
+

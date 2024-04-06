@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import SoundLikeUserModel from "../Album_interface/soundLikeUser";
 import { verifyToken } from "../../../JWT/jwt";
+import { getDB } from "../../ConnectDB/db";
+import { ObjectId } from "mongodb";
 
 export class SoundLikeController {
     static async SoundLikeUser(req: Request, res: Response) {
@@ -8,19 +9,22 @@ export class SoundLikeController {
             verifyToken(req, res, async () => {
                 const { trackId, userId } = req.params;
 
-                const finishLike = await SoundLikeUserModel.findOne({ userId, trackId });
+                const db = getDB();
 
+                const soundLikeCollection = db.collection('soundlikeusers');
+
+                const finishLike = await soundLikeCollection.findOne({ userId: new ObjectId(userId), trackId });
                 if (finishLike) {
-                    return res.status(400).json({ message: 'Трек уже лайкнут' });
+                    return res.status(400).json({ message: 'трек уже лайкнут' });
                 }
-                const newLike = new SoundLikeUserModel({ userId, trackId });
-                await newLike.save();
+                await soundLikeCollection.insertOne({ userId: new ObjectId(userId), trackId });
 
-                res.status(200).json({ message: 'Добавлен в понравившиеся' });
+
+                res.status(200).json({ message: 'добавлен в понравившиеся' });
             });
         } catch (e) {
-            console.error('Ошибка при лайке трека:', e);
-            res.status(500).json({ message: 'Ошибка при лайке трека' });
+            console.error('ошибка при лайке трека:', e);
+            res.status(500).json({ message: 'ошибка при лайке трека' });
         }
     }
 };
