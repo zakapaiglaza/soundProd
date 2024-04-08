@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-const secretKey = 'shmalBanka2455Plotna';
+const secretKey = process.env.SECRET_KEY!;
 
 
 interface ExtendedReq extends Request {

@@ -1,11 +1,13 @@
-
 import { MongoClient, Db } from 'mongodb';
+import * as dotenv from 'dotenv';
 
 let db: Db;
+dotenv.config();
+
 
 export async function connectToMongo(): Promise<void> {
-    const url = 'mongodb://localhost:27017';
-    const dbName = 'musicParser';
+    const url = process.env.MONGODB_URL!;
+    const dbName = process.env.DB_NAME;
 
     try {
         const client = new MongoClient(url);

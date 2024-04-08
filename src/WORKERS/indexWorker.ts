@@ -2,7 +2,8 @@
 import { Worker } from 'worker_threads';
 import { getDB } from '../REST_FOR_DB/ConnectDB/db';
 import { UserParser } from "../MODULES/UserParser";
-
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export default class Start {
     static async configForStart(albumUrl: string): Promise<void> {
@@ -12,7 +13,7 @@ export default class Start {
             const promises: Promise<void>[] = [];
 
             for (const user of users) {
-                const worker = new Worker(".\\src\\Workers\\worker.js", {
+                const worker = new Worker(process.env.WORKER_PATH_FILE!, {
                     workerData: {
                         path: './runWorker.ts'
                     }

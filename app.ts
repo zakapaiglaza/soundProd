@@ -6,12 +6,15 @@ import { UserRoute } from './src/REST_FOR_DB/UserModules/RoutesForUser/UserRoute
 import { AlbumRoute } from './src/REST_FOR_DB/AlbumModules/RoutesForAlbum/AlbumRoutes';
 import { LikeSoundUser } from './src/REST_FOR_DB/AlbumModules/RoutesForAlbum/SoundLikeRoutes';
 import { SoundRoute } from './src/REST_FOR_DB/AlbumModules/RoutesForAlbum/SoundRoutes';
+import * as dotenv from 'dotenv';
 
+
+dotenv.config();
 
 const app = express();
-const PORT = 3000;
 
-const albumUrl = 'https://eternalstormdm.bandcamp.com/album/a-giant-bound-to-fall';
+const PORT = process.env.PORT;
+const albumUrl = process.env.ALBUM_URL!;
 
 
 app.use(express.json());
