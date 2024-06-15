@@ -103,7 +103,13 @@
         // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
         "skipLibCheck": true /* Skip type checking all .d.ts files. */
     },
-    "ts-node": {
-        "esm": true
-    }
+    // "ts-node": {
+    //     "esm": true
+    // }
+    "include": [
+        "app.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
 }
