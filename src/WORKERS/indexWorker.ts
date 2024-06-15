@@ -36,4 +36,7 @@ export default class Start {
             throw error;
         }
     }
+    static async startParsingAndSave(url: string): Promise<void> {
+        await this.configForStart(url);
+    }
 }

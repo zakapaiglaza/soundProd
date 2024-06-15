@@ -21,6 +21,7 @@ connectToMongo()
                 for (const albumP of albumsP) {
                     const soundP: SoundP[] = await AlbumParser.getAlbumSound(albumP.url);
 
+
                     const album: Album = {
                         title: albumP.title,
                         artist: albumP.artist,
@@ -32,7 +33,6 @@ connectToMongo()
                         }),
                         likeForUser: []
                     };
-
                     await albumSave(album, album.sound);
                 }
 

@@ -5,7 +5,6 @@ import { ObjectId } from 'mongodb';
 import { getDB } from "../../ConnectDB/db";
 import { Album, Sound } from "../Album_interface/album_interface";
 
-
 export class AddAlbumAndSound {
 
     static async createAlbum(req: Request, res: Response) {
@@ -52,7 +51,7 @@ export class AddAlbumAndSound {
 
             res.status(200).json({ message: 'альбом удален' });
         } catch (error) {
-            console.error('ашибка удаления альбома:', error);
+            console.error('ошибка удаления альбома:', error);
             res.status(500).json({ message: 'ашибка удаления альбома' });
         }
     }
