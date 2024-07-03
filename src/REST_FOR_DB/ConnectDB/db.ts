@@ -14,6 +14,10 @@ export async function connectToMongo(): Promise<void> {
         await client.connect();
         console.log('Connected to MongoDB');
         db = client.db(dbName);
+
+        const adminDb = db.admin();
+        const info = await adminDb.serverStatus();
+        console.log(`MongoDB version: ${info.version}`);
     } catch (error) {
         console.error('Connection error:', error);
         throw error;
